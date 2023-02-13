@@ -1,0 +1,65 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Score {
+  id    String @id @default(cuid())
+  songId String
+  song Song @relation(fields: [songId], references: [id])
+  chartIndex Int
+  chart Chart @relation(fields: [chartIndex, songId], references: [diffIndex, songId])
+  difficultyId Int
+  date DateTime
+  score Int
+  flags String
+
+  perfect1 String
+  perfect2 String
+  early String
+  green String
+  yellow String
+  red String
+  late String
+  misses String
+  grade String
+
+  userId String
+  user User @relation(fields: [userId], references: [remoteId])
+}
+
+model Song {
+  id    String @id
+  title String
+  artist String
+  jacket String
+  bpm String
+  genre String
+  charts Chart[]
+  scores Score[]
+}
+
+model Chart {
+  // 0=beg, 1=easy, 2=hard, 3=wild, 4=dual, 5=full, 6=team
+  // and Plus charts:
+  // 7=beg, 8=easy, 9=hard,10=wild,11=dual,12=full,13=team
+  diffIndex Int
+  songId String
+  song Song @relation(fields: [songId], references: [id])
+  @@id([songId, diffIndex])
+  diffLevel Int
+  scores Score[]
+}
+
+model User {
+  remoteId String @id
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  scores   Score[]
+}
