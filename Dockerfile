@@ -29,7 +29,8 @@ FROM deps-prefetch as prod-deps
 
 WORKDIR /myapp
 ADD package.json ./
-RUN pnpm install --offline --prod
+COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
+RUN pnpm prune --prod
 
 # Build the app
 FROM base as build
