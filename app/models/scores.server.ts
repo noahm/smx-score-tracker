@@ -1,8 +1,8 @@
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma, User } from "~/generated/client";
 
 import { prisma } from "~/db.server";
 
-export type { Score } from "@prisma/client";
+export type { Score } from "~/generated/client";
 
 export type ScoreWithSongAndChart = Prisma.ScoreGetPayload<{
   include: { song: true; chart: true };

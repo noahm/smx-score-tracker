@@ -1,5 +1,5 @@
-import type { Prisma } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
+import type { Prisma } from "~/generated/client";
+import { PrismaClient } from "~/generated/client";
 import { refreshChartsForUser } from "~/models/scores.server";
 
 const prisma = new PrismaClient();
