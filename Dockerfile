@@ -13,6 +13,7 @@ FROM base as deps-prefetch
 WORKDIR /myapp
 
 ADD pnpm-lock.yaml .npmrc ./
+ENV NODE_ENV production
 RUN pnpm fetch
 
 FROM deps-prefetch as dev-deps
