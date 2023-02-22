@@ -34,16 +34,6 @@ ADD package.json ./
 COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 RUN pnpm prune --prod
 
-# Generate prisma client
-FROM base as prisma-client
-
-WORKDIR /myapp
-
-COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
-
-ADD package.json prisma ./
-RUN pnpm prisma generate
-
 # Build the app
 FROM base as build
 
@@ -52,7 +42,7 @@ WORKDIR /myapp
 COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 
 ADD . .
-COPY --from=prisma-client /myapp/app/generated /myapp/app/generated
+RUN pnpm prisma generate
 RUN pnpm build
 
 # Finally, build the production image with minimal footprint
