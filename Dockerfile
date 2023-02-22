@@ -14,6 +14,7 @@ WORKDIR /myapp
 
 ADD pnpm-lock.yaml .npmrc ./
 ENV NODE_ENV development
+env CYPRESS_INSTALL_BINARY 0
 RUN pnpm fetch
 
 FROM deps-prefetch as dev-deps
