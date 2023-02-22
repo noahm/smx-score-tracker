@@ -7,16 +7,17 @@ ENV NODE_ENV production
 # Install openssl for Prisma
 RUN apt-get update && apt-get install -y openssl sqlite3 && npm i -g pnpm@7
 
-# Install all node_modules, including dev dependencies
+# Prep pnpm cache
 FROM base as deps-prefetch
 
 WORKDIR /myapp
 
 ADD pnpm-lock.yaml .npmrc ./
 ENV NODE_ENV development
-env CYPRESS_INSTALL_BINARY 0
+ENV CYPRESS_INSTALL_BINARY 0
 RUN pnpm fetch
 
+# Install dev deps to node_modules
 FROM deps-prefetch as dev-deps
 
 WORKDIR /myapp
@@ -25,7 +26,7 @@ ADD package.json ./
 ENV NODE_ENV development
 RUN pnpm install --offline
 
-# Setup production node_modules
+# Prep a trimmed production node_modules folder
 FROM deps-prefetch as prod-deps
 
 WORKDIR /myapp
@@ -33,8 +34,8 @@ ADD package.json ./
 COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 RUN pnpm prune --prod
 
-# Build the app
-FROM base as build
+# Generate prisma client
+FROM base as prisma-client
 
 WORKDIR /myapp
 
@@ -43,7 +44,15 @@ COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 ADD package.json prisma ./
 RUN pnpm prisma generate
 
+# Build the app
+FROM base as build
+
+WORKDIR /myapp
+
+COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
+
 ADD . .
+COPY --from=prisma-client /myapp/app/generated /myapp/app/generated
 RUN pnpm build
 
 # Finally, build the production image with minimal footprint
