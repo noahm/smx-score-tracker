@@ -39,7 +39,7 @@ WORKDIR /myapp
 
 COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 
-ADD prisma .
+ADD package.json prisma ./
 RUN pnpm prisma generate
 
 ADD . .

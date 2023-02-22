@@ -60,7 +60,7 @@ jobs:
           cache: "pnpm"
 
       - name: 📥 Download deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile && pnpm prisma generate
 
       - name: 🔎 Type check
         run: pnpm typecheck
