@@ -44,7 +44,6 @@ COPY --from=dev-deps /myapp/node_modules /myapp/node_modules
 ADD . .
 RUN pnpm prisma generate
 RUN pnpm build
-COPY prisma/schema.prisma app/generated/client/*.so.node build/
 
 # Finally, build the production image with minimal footprint
 FROM base
@@ -65,5 +64,7 @@ COPY --from=build /myapp/public /myapp/public
 COPY --from=build /myapp/package.json /myapp/package.json
 COPY --from=build /myapp/start.sh /myapp/start.sh
 COPY --from=build /myapp/prisma /myapp/prisma
+COPY --from=build /myapp/prisma/schema.prisma /myapp/build/
+COPY --from=build /myapp/app/generated/client/*.so.node /myapp/build/
 
 ENTRYPOINT [ "./start.sh" ]
