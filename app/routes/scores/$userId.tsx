@@ -8,6 +8,7 @@ import { getChartsForUser } from "~/models/scores.server";
 
 export async function loader({ params }: LoaderArgs) {
   invariant(params.userId, "userId not found");
+  console.log("loader for notedetailspage");
 
   const user = await getChartsForUser({ remoteId: params.userId });
   if (!user) {
